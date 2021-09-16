@@ -13,9 +13,7 @@
 <main>
   <div class="scrollmenu">
     <a href="/" use:active exact>L1_1</a>
-    <a href="/l1_2" use:active exact>L1_2</a>
-    <!-- <a href="/location" use:active exact>Location</a>
-    <a href="/photo" use:active exact>Photo</a> -->
+    <!-- <a href="/l1_2" use:active exact>L1_2</a> -->
   </div>
 
 </main>
