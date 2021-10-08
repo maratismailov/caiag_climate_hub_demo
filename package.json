@@ -19,6 +19,7 @@
     "tinro": "^0.2.10"
   },
   "dependencies": {
+    "leaflet-tile-filter": "0.0.2",
     "rollup-plugin-workbox": "^5.0.1",
     "sirv-cli": "^0.4.4"
   }

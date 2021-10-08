@@ -1,22 +1,14 @@
 <script>
   import L from "leaflet";
-  import axios from "redaxios";
-  import "../../public/leaflet/Bing.js";
-  import "../../public/leaflet/Leaflet.Editable.js";
   import { onMount } from "svelte";
-  // import "leaflet/dist/leaflet.css";
   let height = (window.innerHeight * 0.89).toString() + "px";
   let map;
   const lat = 42.867972;
   const lon = 74.589243;
   const center = [lat, lon];
   let zoom = 8;
-  let id;
-  let bing;
   let wms_layer;
-  let markerGroup;
-  const popup = "Название объекта: Гимназия-комплекс №70" + "<br>Координаты объекта:" + lat + " " + lon;
-  const api_key = "AijiWK2E56tAWqQiXj0TpzHR4V0xb0wDyCUzeUIqjbuPuwoFPP2kiWNi6TUVMpBn";
+  var tileLayer
 
   onMount(() => {
     const getLocation = () => {
@@ -27,12 +19,6 @@
       }
     };
     createMap();
-    L.marker([lat, lon])
-      .bindPopup(popup)
-      .addTo(markerGroup)
-      .on("click", () => {
-        console.log("dum");
-      });
   });
 
   const showPosition = (position) => {
@@ -41,7 +27,7 @@
     center = [lat, lon];
   };
 
-  let selected_layer = 0
+  let selected_layer = 0;
 
   const layers = [
     { title: "Optical", type: "RGB", description: "rgb_comp", lowName: "ModisRGB", highName: "S2RGB", style: "rgb" },
@@ -68,16 +54,23 @@
     }).setView(center, zoom);
     // bing = new L.BingLayer(api_key);
     // map.addLayer(bing);
-    // L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    // wms_layer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     // }).addTo(map);
     wms_layer = L.tileLayer.wms("https://kyrgyzstan.sibelius-datacube.org:5000/", wmsOptions).addTo(map);
-    markerGroup = L.layerGroup().addTo(map);
   };
 
-  const change_layer = selected_layer => {
+  const change_layer = (selected_layer) => {
     wms_layer.setParams({ layers: layers[selected_layer].lowName });
-  }
+  };
+
+  const apply_filter = () => {
+    // apply a colormap:
+    wms_layer.filter("colormap");
+
+    wms_layer.addTo(map);
+    console.log("d");
+  };
 
   const resize = () => {
     height = (window.innerHeight * 0.89).toString() + "px";
@@ -88,11 +81,12 @@
 
 <div>
   <div class="select">
-    <select bind:value={selected_layer} on:change="{() => change_layer(selected_layer)}">
+    <select bind:value={selected_layer} on:change={() => change_layer(selected_layer)}>
       {#each layers as layer, index}
         <option value={index}>{layer.title} - {layer.type}</option>
       {/each}
     </select>
+    <button class="action" on:click={apply_filter}>apply filter</button>
   </div>
 
   <div style="height: {height}" class="map" id="map">
